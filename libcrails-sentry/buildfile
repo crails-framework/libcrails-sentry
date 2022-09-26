@@ -1,0 +1,37 @@
+import intf_libs += libcrails-http-client%lib{crails-http-client}
+import intf_libs += libcrails-logger%lib{crails-logger}
+
+lib{crails-sentry}: {hxx ixx txx cxx}{**} $impl_libs $intf_libs
+
+hxx{version}: in{version} $src_root/manifest
+
+hxx{export}@./: cxx.importable = false
+
+# Build options.
+#
+cxx.poptions =+ "-I$out_root" "-I$src_root"
+
+{hbmia obja}{*}: cxx.poptions += -DLIBCRAILS_STATIC_BUILD
+{hbmis objs}{*}: cxx.poptions += -DLIBCRAILS_SHARED_BUILD
+
+# Export options.
+#
+lib{crails-sentry}:
+{
+  cxx.export.poptions = "-I$out_root" "-I$src_root"
+  cxx.export.libs = $intf_libs
+}
+
+liba{crails-sentry}: cxx.export.poptions += -DLIBCRAILS_STATIC
+libs{crails-sentry}: cxx.export.poptions += -DLIBCRAILS_SHARED
+
+if $version.pre_release
+  lib{crails-sentry}: bin.lib.version = "-$version.project_id"
+else
+  lib{crails-sentry}: bin.lib.version = "-$version.major.$version.minor"
+
+{hxx ixx txx}{*}:
+{
+  install         = include/
+  install.subdirs = true
+}

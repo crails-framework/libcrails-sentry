@@ -1,0 +1,6 @@
+$out_root/
+{
+  include libcrails-sentry/
+}
+
+export $out_root/libcrails-sentry/$import.target

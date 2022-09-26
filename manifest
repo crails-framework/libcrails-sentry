@@ -1,0 +1,11 @@
+: 1
+name: libcrails-sentry
+version: 2.0.0
+summary: crails-sentry C++ library
+license: BSD-C3
+description-file: README.md
+url: https://example.org/libcrails-sentry
+email: michael@unetresgrossebite.com
+depends: * build2 >= 0.15.0
+depends: * bpkg >= 0.15.0
+depends: { libcrails-http-client libcrails-logger } ^2.0.0
