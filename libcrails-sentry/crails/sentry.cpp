@@ -179,14 +179,17 @@ void Sentry::send_message(Data message)
   HttpRequest  request{HttpVerb::post, get_server_url(), 11};
   HttpResponse response;
   string       json_data = message.to_json();
+  char         body_buffer[json_data.length()];
 
+  json_data.copy(body_buffer, json_data.length());
   monkey_patch_json_body(json_data, "true");
   monkey_patch_json_body(json_data, "false");
   request.set(HttpHeader::accept, "application/json");
   request.set(HttpHeader::connection, "close");
   request.set(HttpHeader::content_type, "application/json");
   request.set("X-Sentry-Auth", sentry_auth_header());
-  request.body() = json_data;
+  request.body().data = reinterpret_cast<void*>(body_buffer);
+  request.body().size = json_data.length();
   request.content_length(json_data.length());
   response = require_client().query(request);
   logger << Logger::Info << "[Sentry] ";
