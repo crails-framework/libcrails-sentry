@@ -24,15 +24,28 @@ using namespace std;
 using namespace boost;
 
 template<class T>
-string get_type_as_string(const T& t)
+static string get_type_as_string(const T& t)
 {
   return demangle(typeid(t).name());
 }
 
-thread_local unique_ptr<ClientInterface> Sentry::client;
+static string sentry_getenv(const char* varname)
+{
+  const char* result = std::getenv(varname);
+
+  return result ? string(result) : string();
+}
+
+const string Sentry::sentry_key      = sentry_getenv("SENTRY_KEY");
+const string Sentry::sentry_secret   = sentry_getenv("SENTRY_SECRET");
+const string Sentry::sentry_version  = "7";
+const string Sentry::project_id      = sentry_getenv("SENTRY_PROJECT_ID");
+const string Sentry::server_url      = "sentry.io";
+const string Sentry::server_protocol = "https";
 
 Sentry::Sentry()
-{}
+{
+}
 
 void Sentry::set_message_context(Data message)
 {

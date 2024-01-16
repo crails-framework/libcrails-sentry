@@ -7,8 +7,21 @@
 
 namespace Crails
 {
+  class SentrySettings
+  {
+    SINGLETON(SentrySettings)
+  protected:
+    void key(const std::string&);
+    void secret(const std::string&);
+    void version(const std::string&);
+    void project_id(const std::string&);
+    void server_url(const std::string&);
+    void server_protocol(const std::string&);
+  };
+
   class Sentry
   {
+    friend class SentrySettings;
     static const std::string sentry_key,
                              sentry_secret,
                              sentry_version,
