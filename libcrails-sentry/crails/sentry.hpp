@@ -2,8 +2,8 @@
 # define SENTRY_HPP
 
 # include <crails/utils/backtrace.hpp>
+# include <crails/utils/singleton.hpp>
 # include <crails/datatree.hpp>
-# include <crails/client.hpp>
 
 namespace Crails
 {
@@ -41,10 +41,13 @@ namespace Crails
 
     static void send_message(Data);
     static std::string sentry_auth_header();
-    static std::string get_server_url();
+    static std::string get_endpoint();
 
+// Using libcrails-http-client, which does not work for some reason
+/*
     static Crails::ClientInterface& require_client();
     static thread_local std::unique_ptr<Crails::ClientInterface> client;
+*/
   };
 }
 

@@ -8,4 +8,6 @@ url: https://example.org/libcrails-sentry
 email: michael@unetresgrossebite.com
 depends: * build2 >= 0.15.0
 depends: * bpkg >= 0.15.0
-depends: { libcrails-http-client libcrails-logger } ^2.0.0
+depends: libcrails-logger ^2.0.0
+depends: libcrails-design-patterns ^2.0.0
+depends: libcurlez ^1.0.0

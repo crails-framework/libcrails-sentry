@@ -1,9 +1,10 @@
 #include <crails/logger.hpp>
+#include <libcurlez/curlez.hxx>
 #include <chrono>
+#include <cstdlib>
 #include "sentry.hpp"
 
 #ifdef __GNUG__
-#include <cstdlib>
 #include <memory>
 #include <cxxabi.h>
 static std::string demangle(const char* name)
@@ -146,20 +147,7 @@ void Sentry::capture_exception(Data params, const std::exception& e)
   }
 }
 
-Crails::ClientInterface& Sentry::require_client()
-{
-  if (!client)
-  {
-    if (server_protocol == "https")
-      client.reset(new Crails::Ssl::Client(server_url, 443));
-    else
-      client.reset(new Crails::Client(server_url, 80));
-    client->connect();
-  }
-  return *client;
-}
-
-string Sentry::get_server_url()
+string Sentry::get_endpoint()
 {
   return "/api/" + project_id + "/store/";
 }
@@ -189,12 +177,46 @@ static void monkey_patch_json_body(string& b, string val)
 
 void Sentry::send_message(Data message)
 {
-  Client::Request  request{HttpVerb::post, get_server_url(), 11};
+  string json_data = message.to_json();
+  CurlReader request;
+  unsigned short status;
+
+  monkey_patch_json_body(json_data, "true");
+  monkey_patch_json_body(json_data, "false");
+  request
+    .url(server_protocol + "://" + server_url + get_endpoint())
+    .follow_redirects()
+    .header("Accept", string_view("application/json"))
+    .header("Connection", string_view("close"))
+    .header("Content-Type", string_view("application/json"))
+    .header("X-Sentry-Auth", sentry_auth_header())
+    .body(json_data);
+  status = request.perform();
+  if (status == 200)
+    logger << "exception logged with id " << request.response_body() << Logger::endl;
+  else
+  {
+    logger << "failed to log exception: ";
+    if (status == 0)
+      logger << "curl error: " << request.error() << Logger::endl;
+    else
+      logger << "sentry response status: " << status << Logger::endl;
+  }
+}
+
+// Using libcrails-http-client, which does not work for some reason
+/*
+thread_local unique_ptr<ClientInterface> Sentry::client;
+
+void Sentry::send_message(Data message)
+{
+  Client::Request  request{HttpVerb::post, get_endpoint(), 11};
   Client::Response response;
   string           json_data = message.to_json();
 
   monkey_patch_json_body(json_data, "true");
   monkey_patch_json_body(json_data, "false");
+
   request.set(HttpHeader::accept, "application/json");
   request.set(HttpHeader::connection, "close");
   request.set(HttpHeader::content_type, "application/json");
@@ -209,3 +231,4 @@ void Sentry::send_message(Data message)
     logger << "failed to log exception: " << response << Logger::endl;
   client.reset(nullptr);
 }
+*/

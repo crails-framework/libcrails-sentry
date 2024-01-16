@@ -1,5 +1,6 @@
-import intf_libs += libcrails-http-client%lib{crails-http-client}
 import intf_libs += libcrails-logger%lib{crails-logger}
+import intf_libs += libcrails-design-patterns%lib{crails-design-patterns}
+import intf_libs += libcurlez%lib{curlez}
 
 lib{crails-sentry}: {hxx ixx txx cxx}{**} $impl_libs $intf_libs
 
