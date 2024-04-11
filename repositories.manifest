@@ -9,3 +9,7 @@ location: https://github.com/crails-framework/libcrails-design-patterns.git#mast
 :
 role: prerequisite
 location: https://github.com/Plaristote/libcurlez.git#master
+
+:
+role: prerequisite
+location: https://github.com/crails-framework/libbacktrace.git#master
