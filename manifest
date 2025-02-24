@@ -12,4 +12,4 @@ depends: libcrails-logger ^2.0.0
 depends: libcrails-design-patterns ^2.0.0
 depends: libdatatree ^2.0.0
 depends: libcurlez ^1.0.0
-depends: libbacktrace ^1.0.0
+depends: libbacktrace ^2.0.0
