@@ -185,6 +185,8 @@ void Sentry::send_message(Data message)
   monkey_patch_json_body(json_data, "false");
   request
     .url(server_protocol + "://" + server_url + get_endpoint())
+    .stderr(logger.get_stdout())
+    .verbose(logger.get_log_level() == Logger::Debug)
     .follow_redirects()
     .header("Accept", string_view("application/json"))
     .header("Connection", string_view("close"))
@@ -192,6 +194,7 @@ void Sentry::send_message(Data message)
     .header("X-Sentry-Auth", sentry_auth_header())
     .body(json_data);
   status = request.perform();
+  logger << Logger::Info;
   if (status == 200)
     logger << "exception logged with id " << request.response_body() << Logger::endl;
   else
